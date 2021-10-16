@@ -1,0 +1,2 @@
+netname=train_test.pt;
+nohup /home/jcwang/work/0.SparseConv/0.SparseCaffeV9.1//build/tools/caffe train --solver=$0_solver.pt --snapshot=weights_20210916095915/CIFAR10_iter_2000000.solverstate >> $0.log --gpu 0& 
