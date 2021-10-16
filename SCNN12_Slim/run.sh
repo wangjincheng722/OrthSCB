@@ -1,0 +1,2 @@
+netname=/home/jcwang/work/0.SparseConv/4.Train/112.BW12SparseConvV9.1SparseNetV4.5/PruneTh1.e-2/PrunedModel.pt;
+nohup /home/jcwang/work/0.SparseConv/0.SparseCaffeV9.1/build/tools/caffe train --solver=/home/jcwang/work/0.SparseConv/4.Train/112.BW12SparseConvV9.1SparseNetV4.5/PruneTh1.e-2/solver.pt --weights=PrunedParam.caffemodel --gpu 0 >> /home/jcwang/work/0.SparseConv/4.Train/112.BW12SparseConvV9.1SparseNetV4.5/PruneTh1.e-2/solver.log&
