@@ -1,0 +1,872 @@
+name: "PrunedSparseConvolutionNet"
+layer {
+  name: "data"
+  type: "Input"
+  top: "data"
+  input_param {
+    shape {
+      dim: 1
+      dim: 3
+      dim: 32
+      dim: 32
+    }
+  }
+}
+layer {
+  name: "B0_0_ConvBNScaleReLU_Conv"
+  type: "Convolution"
+  bottom: "data"
+  top: "B0_0_ConvBNScaleReLU_Conv"
+  convolution_param {
+    num_output: 64
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "B0_0_ConvBNScaleReLU_BN"
+  type: "BatchNorm"
+  bottom: "B0_0_ConvBNScaleReLU_Conv"
+  top: "B0_0_ConvBNScaleReLU_Conv"
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  batch_norm_param {
+    moving_average_fraction: 0.999000012875
+    eps: 0.0010000000475
+  }
+}
+layer {
+  name: "B0_0_ConvBNScaleReLU_Scale"
+  type: "Scale"
+  bottom: "B0_0_ConvBNScaleReLU_Conv"
+  top: "B0_0_ConvBNScaleReLU_Conv"
+  scale_param {
+    filler {
+      value: 1.0
+    }
+    bias_term: true
+    bias_filler {
+      value: 0.0
+    }
+    l1_lambda: 0.0
+  }
+}
+layer {
+  name: "B0_0_ConvBNScaleReLU_ReLU"
+  type: "ReLU"
+  bottom: "B0_0_ConvBNScaleReLU_Conv"
+  top: "B0_0_ConvBNScaleReLU_Conv"
+}
+layer {
+  name: "B0_0_ConvBNScaleReLU_Dropout"
+  type: "Dropout"
+  bottom: "B0_0_ConvBNScaleReLU_Conv"
+  top: "ConvBNScaleReLU"
+  dropout_param {
+    dropout_ratio: 0.25
+  }
+}
+layer {
+  name: "B0_1_SConv_SparseConv"
+  type: "SparseConvolution"
+  bottom: "ConvBNScaleReLU"
+  top: "B0_1_SConvBlockV2_T1"
+  sparse_convolution_param {
+    weight_filler {
+      type: "xavier"
+    }
+    channel_expand_file: "/home/jcwang/work/2.GeneratedSparseConvolution/0.CaffeSparseConv/4.TrainRuns/112.BW4SparseConvV9SparseNetV4.5DataAug/PruneTh1.e-2/B0_1_SConv_SparseConv.SparseExpandParam.bin"
+    channel_expand_multiplier: 4
+  }
+}
+layer {
+  name: "B0_1_SConv_BN"
+  type: "BatchNorm"
+  bottom: "B0_1_SConvBlockV2_T1"
+  top: "B0_1_SConvBlockV2_T1"
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  batch_norm_param {
+    moving_average_fraction: 0.999000012875
+    eps: 0.0010000000475
+  }
+}
+layer {
+  name: "B0_1_SConv_Scale"
+  type: "Scale"
+  bottom: "B0_1_SConvBlockV2_T1"
+  top: "B0_1_SConvBlockV2_Scale"
+  scale_param {
+    bias_term: true
+  }
+}
+layer {
+  name: "B0_1_SConv_Conv1x1"
+  type: "Convolution"
+  bottom: "B0_1_SConvBlockV2_Scale"
+  top: "B0_1_SConvBlockV2_Conv1x1"
+  convolution_param {
+    num_output: 64
+    bias_term: true
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "B0_1_SConv_ReLU"
+  type: "ReLU"
+  bottom: "B0_1_SConvBlockV2_Conv1x1"
+  top: "B0_1_SConvBlockV2_Conv1x1"
+}
+layer {
+  name: "B0_1_SConv_Dropout"
+  type: "Dropout"
+  bottom: "B0_1_SConvBlockV2_Conv1x1"
+  top: "B0_1_SConvBlockV2_Dropout"
+  dropout_param {
+    dropout_ratio: 0.25
+  }
+}
+layer {
+  name: "B0_Pooling"
+  type: "Pooling"
+  bottom: "B0_1_SConvBlockV2_Dropout"
+  top: "Pooling1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+    pad: 0
+  }
+}
+layer {
+  name: "B1_0_SConv_SparseConv"
+  type: "SparseConvolution"
+  bottom: "Pooling1"
+  top: "B1_0_SConvBlockV2_T1"
+  sparse_convolution_param {
+    weight_filler {
+      type: "xavier"
+    }
+    channel_expand_file: "/home/jcwang/work/2.GeneratedSparseConvolution/0.CaffeSparseConv/4.TrainRuns/112.BW4SparseConvV9SparseNetV4.5DataAug/PruneTh1.e-2/B1_0_SConv_SparseConv.SparseExpandParam.bin"
+    channel_expand_multiplier: 4
+  }
+}
+layer {
+  name: "B1_0_SConv_BN"
+  type: "BatchNorm"
+  bottom: "B1_0_SConvBlockV2_T1"
+  top: "B1_0_SConvBlockV2_T1"
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  batch_norm_param {
+    moving_average_fraction: 0.999000012875
+    eps: 0.0010000000475
+  }
+}
+layer {
+  name: "B1_0_SConv_Scale"
+  type: "Scale"
+  bottom: "B1_0_SConvBlockV2_T1"
+  top: "B1_0_SConvBlockV2_Scale"
+  scale_param {
+    bias_term: true
+  }
+}
+layer {
+  name: "B1_0_SConv_Conv1x1"
+  type: "Convolution"
+  bottom: "B1_0_SConvBlockV2_Scale"
+  top: "B1_0_SConvBlockV2_Conv1x1"
+  convolution_param {
+    num_output: 128
+    bias_term: true
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "B1_0_SConv_ReLU"
+  type: "ReLU"
+  bottom: "B1_0_SConvBlockV2_Conv1x1"
+  top: "B1_0_SConvBlockV2_Conv1x1"
+}
+layer {
+  name: "B1_0_SConv_Dropout"
+  type: "Dropout"
+  bottom: "B1_0_SConvBlockV2_Conv1x1"
+  top: "B1_0_SConvBlockV2_Dropout"
+  dropout_param {
+    dropout_ratio: 0.25
+  }
+}
+layer {
+  name: "B1_1_SConv_SparseConv"
+  type: "SparseConvolution"
+  bottom: "B1_0_SConvBlockV2_Dropout"
+  top: "B1_1_SConvBlockV2_T1"
+  sparse_convolution_param {
+    weight_filler {
+      type: "xavier"
+    }
+    channel_expand_file: "/home/jcwang/work/2.GeneratedSparseConvolution/0.CaffeSparseConv/4.TrainRuns/112.BW4SparseConvV9SparseNetV4.5DataAug/PruneTh1.e-2/B1_1_SConv_SparseConv.SparseExpandParam.bin"
+    channel_expand_multiplier: 4
+  }
+}
+layer {
+  name: "B1_1_SConv_BN"
+  type: "BatchNorm"
+  bottom: "B1_1_SConvBlockV2_T1"
+  top: "B1_1_SConvBlockV2_T1"
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  batch_norm_param {
+    moving_average_fraction: 0.999000012875
+    eps: 0.0010000000475
+  }
+}
+layer {
+  name: "B1_1_SConv_Scale"
+  type: "Scale"
+  bottom: "B1_1_SConvBlockV2_T1"
+  top: "B1_1_SConvBlockV2_Scale"
+  scale_param {
+    bias_term: true
+  }
+}
+layer {
+  name: "B1_1_SConv_Conv1x1"
+  type: "Convolution"
+  bottom: "B1_1_SConvBlockV2_Scale"
+  top: "B1_1_SConvBlockV2_Conv1x1"
+  convolution_param {
+    num_output: 128
+    bias_term: true
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "B1_1_SConv_ReLU"
+  type: "ReLU"
+  bottom: "B1_1_SConvBlockV2_Conv1x1"
+  top: "B1_1_SConvBlockV2_Conv1x1"
+}
+layer {
+  name: "B1_1_SConv_Dropout"
+  type: "Dropout"
+  bottom: "B1_1_SConvBlockV2_Conv1x1"
+  top: "B1_1_SConvBlockV2_Dropout"
+  dropout_param {
+    dropout_ratio: 0.25
+  }
+}
+layer {
+  name: "B1_Pooling"
+  type: "Pooling"
+  bottom: "B1_1_SConvBlockV2_Dropout"
+  top: "Pooling2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+    pad: 0
+  }
+}
+layer {
+  name: "B2_0_SConv_SparseConv"
+  type: "SparseConvolution"
+  bottom: "Pooling2"
+  top: "B2_0_SConvBlockV2_T1"
+  sparse_convolution_param {
+    weight_filler {
+      type: "xavier"
+    }
+    channel_expand_file: "/home/jcwang/work/2.GeneratedSparseConvolution/0.CaffeSparseConv/4.TrainRuns/112.BW4SparseConvV9SparseNetV4.5DataAug/PruneTh1.e-2/B2_0_SConv_SparseConv.SparseExpandParam.bin"
+    channel_expand_multiplier: 4
+  }
+}
+layer {
+  name: "B2_0_SConv_BN"
+  type: "BatchNorm"
+  bottom: "B2_0_SConvBlockV2_T1"
+  top: "B2_0_SConvBlockV2_T1"
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  batch_norm_param {
+    moving_average_fraction: 0.999000012875
+    eps: 0.0010000000475
+  }
+}
+layer {
+  name: "B2_0_SConv_Scale"
+  type: "Scale"
+  bottom: "B2_0_SConvBlockV2_T1"
+  top: "B2_0_SConvBlockV2_Scale"
+  scale_param {
+    bias_term: true
+  }
+}
+layer {
+  name: "B2_0_SConv_Conv1x1"
+  type: "Convolution"
+  bottom: "B2_0_SConvBlockV2_Scale"
+  top: "B2_0_SConvBlockV2_Conv1x1"
+  convolution_param {
+    num_output: 192
+    bias_term: true
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "B2_0_SConv_ReLU"
+  type: "ReLU"
+  bottom: "B2_0_SConvBlockV2_Conv1x1"
+  top: "B2_0_SConvBlockV2_Conv1x1"
+}
+layer {
+  name: "B2_0_SConv_Dropout"
+  type: "Dropout"
+  bottom: "B2_0_SConvBlockV2_Conv1x1"
+  top: "B2_0_SConvBlockV2_Dropout"
+  dropout_param {
+    dropout_ratio: 0.25
+  }
+}
+layer {
+  name: "B2_1_SConv_SparseConv"
+  type: "SparseConvolution"
+  bottom: "B2_0_SConvBlockV2_Dropout"
+  top: "B2_1_SConvBlockV2_T1"
+  sparse_convolution_param {
+    weight_filler {
+      type: "xavier"
+    }
+    channel_expand_file: "/home/jcwang/work/2.GeneratedSparseConvolution/0.CaffeSparseConv/4.TrainRuns/112.BW4SparseConvV9SparseNetV4.5DataAug/PruneTh1.e-2/B2_1_SConv_SparseConv.SparseExpandParam.bin"
+    channel_expand_multiplier: 4
+  }
+}
+layer {
+  name: "B2_1_SConv_BN"
+  type: "BatchNorm"
+  bottom: "B2_1_SConvBlockV2_T1"
+  top: "B2_1_SConvBlockV2_T1"
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  batch_norm_param {
+    moving_average_fraction: 0.999000012875
+    eps: 0.0010000000475
+  }
+}
+layer {
+  name: "B2_1_SConv_Scale"
+  type: "Scale"
+  bottom: "B2_1_SConvBlockV2_T1"
+  top: "B2_1_SConvBlockV2_Scale"
+  scale_param {
+    bias_term: true
+  }
+}
+layer {
+  name: "B2_1_SConv_Conv1x1"
+  type: "Convolution"
+  bottom: "B2_1_SConvBlockV2_Scale"
+  top: "B2_1_SConvBlockV2_Conv1x1"
+  convolution_param {
+    num_output: 192
+    bias_term: true
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "B2_1_SConv_ReLU"
+  type: "ReLU"
+  bottom: "B2_1_SConvBlockV2_Conv1x1"
+  top: "B2_1_SConvBlockV2_Conv1x1"
+}
+layer {
+  name: "B2_1_SConv_Dropout"
+  type: "Dropout"
+  bottom: "B2_1_SConvBlockV2_Conv1x1"
+  top: "B2_1_SConvBlockV2_Dropout"
+  dropout_param {
+    dropout_ratio: 0.25
+  }
+}
+layer {
+  name: "B2_2_SConv_SparseConv"
+  type: "SparseConvolution"
+  bottom: "B2_1_SConvBlockV2_Dropout"
+  top: "B2_2_SConvBlockV2_T1"
+  sparse_convolution_param {
+    weight_filler {
+      type: "xavier"
+    }
+    channel_expand_file: "/home/jcwang/work/2.GeneratedSparseConvolution/0.CaffeSparseConv/4.TrainRuns/112.BW4SparseConvV9SparseNetV4.5DataAug/PruneTh1.e-2/B2_2_SConv_SparseConv.SparseExpandParam.bin"
+    channel_expand_multiplier: 4
+  }
+}
+layer {
+  name: "B2_2_SConv_BN"
+  type: "BatchNorm"
+  bottom: "B2_2_SConvBlockV2_T1"
+  top: "B2_2_SConvBlockV2_T1"
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  batch_norm_param {
+    moving_average_fraction: 0.999000012875
+    eps: 0.0010000000475
+  }
+}
+layer {
+  name: "B2_2_SConv_Scale"
+  type: "Scale"
+  bottom: "B2_2_SConvBlockV2_T1"
+  top: "B2_2_SConvBlockV2_Scale"
+  scale_param {
+    bias_term: true
+  }
+}
+layer {
+  name: "B2_2_SConv_Conv1x1"
+  type: "Convolution"
+  bottom: "B2_2_SConvBlockV2_Scale"
+  top: "B2_2_SConvBlockV2_Conv1x1"
+  convolution_param {
+    num_output: 192
+    bias_term: true
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "B2_2_SConv_ReLU"
+  type: "ReLU"
+  bottom: "B2_2_SConvBlockV2_Conv1x1"
+  top: "B2_2_SConvBlockV2_Conv1x1"
+}
+layer {
+  name: "B2_2_SConv_Dropout"
+  type: "Dropout"
+  bottom: "B2_2_SConvBlockV2_Conv1x1"
+  top: "B2_2_SConvBlockV2_Dropout"
+  dropout_param {
+    dropout_ratio: 0.25
+  }
+}
+layer {
+  name: "B2_Pooling"
+  type: "Pooling"
+  bottom: "B2_2_SConvBlockV2_Dropout"
+  top: "Pooling3"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+    pad: 0
+  }
+}
+layer {
+  name: "B3_0_SConv_SparseConv"
+  type: "SparseConvolution"
+  bottom: "Pooling3"
+  top: "B3_0_SConvBlockV2_T1"
+  sparse_convolution_param {
+    weight_filler {
+      type: "xavier"
+    }
+    channel_expand_file: "/home/jcwang/work/2.GeneratedSparseConvolution/0.CaffeSparseConv/4.TrainRuns/112.BW4SparseConvV9SparseNetV4.5DataAug/PruneTh1.e-2/B3_0_SConv_SparseConv.SparseExpandParam.bin"
+    channel_expand_multiplier: 4
+  }
+}
+layer {
+  name: "B3_0_SConv_BN"
+  type: "BatchNorm"
+  bottom: "B3_0_SConvBlockV2_T1"
+  top: "B3_0_SConvBlockV2_T1"
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  batch_norm_param {
+    moving_average_fraction: 0.999000012875
+    eps: 0.0010000000475
+  }
+}
+layer {
+  name: "B3_0_SConv_Scale"
+  type: "Scale"
+  bottom: "B3_0_SConvBlockV2_T1"
+  top: "B3_0_SConvBlockV2_Scale"
+  scale_param {
+    bias_term: true
+  }
+}
+layer {
+  name: "B3_0_SConv_Conv1x1"
+  type: "Convolution"
+  bottom: "B3_0_SConvBlockV2_Scale"
+  top: "B3_0_SConvBlockV2_Conv1x1"
+  convolution_param {
+    num_output: 192
+    bias_term: true
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "B3_0_SConv_ReLU"
+  type: "ReLU"
+  bottom: "B3_0_SConvBlockV2_Conv1x1"
+  top: "B3_0_SConvBlockV2_Conv1x1"
+}
+layer {
+  name: "B3_0_SConv_Dropout"
+  type: "Dropout"
+  bottom: "B3_0_SConvBlockV2_Conv1x1"
+  top: "B3_0_SConvBlockV2_Dropout"
+  dropout_param {
+    dropout_ratio: 0.25
+  }
+}
+layer {
+  name: "B3_1_SConv_SparseConv"
+  type: "SparseConvolution"
+  bottom: "B3_0_SConvBlockV2_Dropout"
+  top: "B3_1_SConvBlockV2_T1"
+  sparse_convolution_param {
+    weight_filler {
+      type: "xavier"
+    }
+    channel_expand_file: "/home/jcwang/work/2.GeneratedSparseConvolution/0.CaffeSparseConv/4.TrainRuns/112.BW4SparseConvV9SparseNetV4.5DataAug/PruneTh1.e-2/B3_1_SConv_SparseConv.SparseExpandParam.bin"
+    channel_expand_multiplier: 4
+  }
+}
+layer {
+  name: "B3_1_SConv_BN"
+  type: "BatchNorm"
+  bottom: "B3_1_SConvBlockV2_T1"
+  top: "B3_1_SConvBlockV2_T1"
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  batch_norm_param {
+    moving_average_fraction: 0.999000012875
+    eps: 0.0010000000475
+  }
+}
+layer {
+  name: "B3_1_SConv_Scale"
+  type: "Scale"
+  bottom: "B3_1_SConvBlockV2_T1"
+  top: "B3_1_SConvBlockV2_Scale"
+  scale_param {
+    bias_term: true
+  }
+}
+layer {
+  name: "B3_1_SConv_Conv1x1"
+  type: "Convolution"
+  bottom: "B3_1_SConvBlockV2_Scale"
+  top: "B3_1_SConvBlockV2_Conv1x1"
+  convolution_param {
+    num_output: 192
+    bias_term: true
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "B3_1_SConv_ReLU"
+  type: "ReLU"
+  bottom: "B3_1_SConvBlockV2_Conv1x1"
+  top: "B3_1_SConvBlockV2_Conv1x1"
+}
+layer {
+  name: "B3_1_SConv_Dropout"
+  type: "Dropout"
+  bottom: "B3_1_SConvBlockV2_Conv1x1"
+  top: "B3_1_SConvBlockV2_Dropout"
+  dropout_param {
+    dropout_ratio: 0.25
+  }
+}
+layer {
+  name: "B3_2_SConv_SparseConv"
+  type: "SparseConvolution"
+  bottom: "B3_1_SConvBlockV2_Dropout"
+  top: "B3_2_SConvBlockV2_T1"
+  sparse_convolution_param {
+    weight_filler {
+      type: "xavier"
+    }
+    channel_expand_file: "/home/jcwang/work/2.GeneratedSparseConvolution/0.CaffeSparseConv/4.TrainRuns/112.BW4SparseConvV9SparseNetV4.5DataAug/PruneTh1.e-2/B3_2_SConv_SparseConv.SparseExpandParam.bin"
+    channel_expand_multiplier: 4
+  }
+}
+layer {
+  name: "B3_2_SConv_BN"
+  type: "BatchNorm"
+  bottom: "B3_2_SConvBlockV2_T1"
+  top: "B3_2_SConvBlockV2_T1"
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  batch_norm_param {
+    moving_average_fraction: 0.999000012875
+    eps: 0.0010000000475
+  }
+}
+layer {
+  name: "B3_2_SConv_Scale"
+  type: "Scale"
+  bottom: "B3_2_SConvBlockV2_T1"
+  top: "B3_2_SConvBlockV2_Scale"
+  scale_param {
+    bias_term: true
+  }
+}
+layer {
+  name: "B3_2_SConv_Conv1x1"
+  type: "Convolution"
+  bottom: "B3_2_SConvBlockV2_Scale"
+  top: "B3_2_SConvBlockV2_Conv1x1"
+  convolution_param {
+    num_output: 192
+    bias_term: true
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "B3_2_SConv_ReLU"
+  type: "ReLU"
+  bottom: "B3_2_SConvBlockV2_Conv1x1"
+  top: "B3_2_SConvBlockV2_Conv1x1"
+}
+layer {
+  name: "B3_2_SConv_Dropout"
+  type: "Dropout"
+  bottom: "B3_2_SConvBlockV2_Conv1x1"
+  top: "B3_2_SConvBlockV2_Dropout"
+  dropout_param {
+    dropout_ratio: 0.25
+  }
+}
+layer {
+  name: "B3_Pooling"
+  type: "Pooling"
+  bottom: "B3_2_SConvBlockV2_Dropout"
+  top: "VGGBody"
+  pooling_param {
+    pool: AVE
+    global_pooling: true
+  }
+}
+layer {
+  name: "fc1"
+  type: "InnerProduct"
+  bottom: "VGGBody"
+  top: "fc1"
+  inner_product_param {
+    num_output: 384
+    bias_term: true
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "classifier"
+  type: "InnerProduct"
+  bottom: "fc1"
+  top: "classifier"
+  inner_product_param {
+    num_output: 10
+    bias_term: true
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "prob"
+  type: "Softmax"
+  bottom: "classifier"
+  top: "prob"
+}
