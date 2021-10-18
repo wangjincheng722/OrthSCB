@@ -1,0 +1,15 @@
+test_iter: 10000
+test_interval: 5000
+base_lr: 9.99999974738e-05
+display: 500
+max_iter: 2000000
+lr_policy: "fixed"
+gamma: 0.10000000149
+momentum: 0.899999976158
+weight_decay: 9.99999974738e-06
+snapshot: 50000
+snapshot_prefix: "weights_20210918125339/CIFAR10"
+solver_mode: GPU
+random_seed: 831486
+net: "train_test.pt"
+type: "SGD"

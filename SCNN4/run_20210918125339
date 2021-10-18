@@ -1,0 +1,3 @@
+netname=train_test.pt;
+rm $0.log;
+nohup /home/jcwang/work/2.GeneratedSparseConvolution/0.CaffeSparseConv/5.SparseConvCaffeV9.1/build/tools/caffe train --solver=$0_solver.pt --weights=weights_20210913141331/CIFAR10_iter_2000000.caffemodel > $0.log --gpu 0& 
